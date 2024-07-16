@@ -4,6 +4,8 @@ GEM
     diff-lcs (1.5.1)
     nokogiri (1.16.6-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.16.6-x86_64-linux)
+      racc (~> 1.4)
     racc (1.8.0)
     rack (2.2.9)
     rspec (3.13.0)
@@ -22,6 +24,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-23
+  x86_64-linux
 
 DEPENDENCIES
   nokogiri
@@ -29,4 +32,4 @@ DEPENDENCIES
   rspec
 
 BUNDLED WITH
-   2.3.26
+   2.5.15
