@@ -1,3 +1,7 @@
+---
+permalink: /readme/
+---
+
 ## Container Design Decisions 
 
 The repository offers a framework that helps a broad range of technical practitioners to make informed decisions to adpot container technologies.
