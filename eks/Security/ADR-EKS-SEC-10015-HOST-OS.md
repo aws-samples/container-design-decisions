@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Chose a host OS for your EKS worker nodes
-permalink: /security/03
+permalink: /security03
 ---
 
 # Chose a host OS for your EKS worker nodes

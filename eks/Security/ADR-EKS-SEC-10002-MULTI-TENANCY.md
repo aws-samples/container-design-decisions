@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Designing Operating Model for Container Platform
-permalink: /security
+title: Designing a Strategy to Deploy Kubernetes Cluster for Multi-Tenancy
+permalink: /security01
 ---
 
 ---

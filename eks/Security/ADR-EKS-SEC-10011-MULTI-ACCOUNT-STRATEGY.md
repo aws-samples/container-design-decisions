@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Multi-Account Strategy
-permalink: /security/02
+permalink: /security02
 ---
 
 ---
