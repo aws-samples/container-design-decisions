@@ -278,7 +278,7 @@ DEPENDENCIES
   github-pages (~> 231)
   http_parser.rb (~> 0.6.0)
   jekyll-feed (~> 0.12)
-  jekyll-theme-minimal
+  jekyll-theme-architect
   tzinfo (>= 1, < 3)
   tzinfo-data
   wdm (~> 0.1.1)

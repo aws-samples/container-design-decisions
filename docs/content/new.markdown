@@ -1,112 +1,123 @@
 ---
-layout: post
-title: Blogging Like a Hacker
-permalink: /new/
+layout: default
 ---
 
-## Designing Operating Model for Container Platform
+Text can be **bold**, _italic_, or ~~strikethrough~~.
 
-Designing an operating model for a container platform involves evaluating multiple options to meet specific organizational needs regarding operational excellence, constraints, competency, control and security, consistency, cost management, and productivity.
+[Link to another page](./another-page.html).
 
-## Decision Drivers
+There should be whitespace between paragraphs.
 
-* **Operational Excellence:** Ensuring efficient management and maintenance of the container platform.
-* **Constraints:** Identifying limitations and challenges in the current operational model.
-* **Competency:** Assessing the skill level and experience of the team with container technologies and DevOps practices.
-* **Control and Security:** Protecting the infrastructure and data from vulnerabilities and breaches.
-* **Consistency:** Achieving uniformity in processes and practices across teams.
-* **Cost Management:** Balancing performance and resource allocation against cost.
-* **Productivity:** Enhancing the efficiency and output of development teams.
+There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
 
-## Considered Options
+# Header 1
 
-* **Centralized Provisioning**
-* **Platform-enabled Golden Path**
-* **Embedded DevOps**
-* **Decentralized DevOps**
+This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
 
-## Pros and Cons of the Options
+## Header 2
 
-### Centralized Provisioning
+> This is a blockquote following a header.
+>
+> When something is important enough, you do it even if the odds are not in your favor.
 
-**Description:**
-In a centralized provisioning model, a dedicated team is responsible for architecting, deploying, and managing the infrastructure. This model provides central control over resource provisioning but may introduce bottlenecks and slower deployment cycles.
+### Header 3
 
-* **Good, because** it ensures consistency and central control over resources.
-* **Good, because** it allows specialized teams to handle complex infrastructure tasks.
-* **Neutral, because** it may lead to a backlog of requests, slowing down development.
-* **Bad, because** it can reduce the autonomy of development teams, leading to frustration.
-* **Bad, because** it may become a single point of failure if the central team encounters issues.
+```js
+// Javascript code with syntax highlighting.
+var fun = function lang(l) {
+  dateformat.i18n = require('./lang/' + l)
+  return true;
+}
+```
 
-### Platform-enabled Golden Path
+```ruby
+# Ruby code with syntax highlighting
+GitHubPages::Dependencies.gems.each do |gem, version|
+  s.add_dependency(gem, "= #{version}")
+end
+```
 
-**Description:**
-This model offers a predefined set of best practices and tools, allowing for customization while maintaining consistency. It strikes a balance between flexibility and standardization.
+#### Header 4
 
-* **Good, because** it promotes best practices and reduces the risk of misconfigurations.
-* **Good, because** it enables rapid onboarding of new teams and projects.
-* **Neutral, because** it requires significant effort to develop and maintain the golden path.
-* **Bad, because** it may limit flexibility for teams with unique requirements.
-* **Bad, because** deviations from the golden path might not be well-supported.
+*   This is an unordered list following a header.
+*   This is an unordered list following a header.
+*   This is an unordered list following a header.
 
-### Embedded DevOps
+##### Header 5
 
-**Description:**
-Embedded DevOps places DevOps engineers within individual development teams, ensuring close collaboration and tailored support for each team's needs.
+1.  This is an ordered list following a header.
+2.  This is an ordered list following a header.
+3.  This is an ordered list following a header.
 
-* **Good, because** it fosters close collaboration between developers and operations.
-* **Good, because** it allows for tailored solutions that meet the specific needs of each team.
-* **Neutral, because** it requires more DevOps resources, which can be costly.
-* **Bad, because** it may lead to inconsistencies across the organization.
-* **Bad, because** knowledge and expertise can become siloed within individual teams.
+###### Header 6
 
-### Decentralized DevOps
+| head1        | head two          | three |
+|:-------------|:------------------|:------|
+| ok           | good swedish fish | nice  |
+| out of stock | good and plenty   | nice  |
+| ok           | good `oreos`      | hmm   |
+| ok           | good `zoute` drop | yumm  |
 
-**Description:**
-This model gives development teams full ownership and responsibility for defining and managing their infrastructure and pipelines, offering maximum autonomy and flexibility.
+### There's a horizontal rule below this.
 
-* **Good, because** it maximizes team autonomy and enables rapid innovation.
-* **Good, because** it allows teams to tailor their processes and tools to best fit their specific needs.
-* **Neutral, because** it requires strong governance and communication to ensure consistency.
-* **Bad, because** it can lead to fragmentation and inconsistency, making it harder to maintain standards.
-* **Bad, because** it may result in duplicated efforts and increased overhead as each team develops their own solutions.
+* * *
 
-## Resources
+### Here is an unordered list:
 
-1. [How organizations are modernizing for cloud operations](https://aws.amazon.com/blogs/devops/how-organizations-are-modernizing-for-cloud-operations/)
-2. [Modernizing operations in the AWS Cloud](https://docs.aws.amazon.com/prescriptive-guidance/latest/migration-operations-integration/welcome.html)
-3. [Strategy for modernizing applications in the AWS Cloud](https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-modernizing-applications/welcome.html)
+*   Item foo
+*   Item bar
+*   Item baz
+*   Item zip
 
-## Discovery Questions
+### And an ordered list:
 
-1. **Priorities and Requirements:**
-   - What are the most important goals you want to achieve with your container platform (e.g., faster deployment, better security, reduced costs)?
-   - Are there any specific requirements or constraints that must be met (e.g., regulatory compliance, integration with existing systems)?
+1.  Item one
+1.  Item two
+1.  Item three
+1.  Item four
 
-2. **Constraints:**
-   - What limitations or challenges do you face in your current operational model (e.g., resource bottlenecks, lack of automation)?
-   - How do you manage dependencies and coordination between different teams or departments?
+### And a nested list:
 
-3. **Competency:**
-   - What is the current skill level and experience of your team with container technologies and DevOps practices?
-   - How comfortable are your teams with managing their own infrastructure versus relying on a central team?
+- level 1 item
+  - level 2 item
+  - level 2 item
+    - level 3 item
+    - level 3 item
+- level 1 item
+  - level 2 item
+  - level 2 item
+  - level 2 item
+- level 1 item
+  - level 2 item
+  - level 2 item
+- level 1 item
 
-4. **Control and Security:**
-   - What are your primary security concerns related to container management and orchestration?
-   - How do you currently handle security policies and compliance requirements across different teams?
+### Small image
 
-5. **Consistency:**
-   - How important is it for your organization to have consistent processes and practices across all teams?
-   - What measures do you have in place to ensure uniformity in your operations?
+![Octocat](https://github.githubassets.com/images/icons/emoji/octocat.png)
 
-6. **Cost Management:**
-   - What is your budget for managing and maintaining your container platform, and how do you plan to control costs?
-   - How do you currently allocate resources and manage cost efficiency across your teams?
+### Large image
 
-7. **Productivity:**
-   - How do you measure the productivity of your development teams?
-   - What tools and practices do you use to enhance the efficiency and output of your teams?
+![Branching](https://guides.github.com/activities/hello-world/branching.png)
 
-8. **Future Plans:**
-   - What are your plans for scaling your container platform, and how do you envision the growth of your DevOps practices?
-   - How do you plan to stay updated with the latest technologies and best practices in container management and orchestration?
+
+### Definition lists can be used with HTML syntax.
+
+<dl>
+<dt>Name</dt>
+<dd>Godzilla</dd>
+<dt>Born</dt>
+<dd>1952</dd>
+<dt>Birthplace</dt>
+<dd>Japan</dd>
+<dt>Color</dt>
+<dd>Green</dd>
+</dl>
+
+```
+Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
+```
+
+```
+The final element.
+```
