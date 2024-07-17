@@ -1,3 +1,9 @@
+---
+layout: page
+title: Designing Operating Model for Container Platform
+permalink: /operations
+---
+
 ## Designing Operating Model for Container Platform
 
 Designing an operating model for a container platform involves evaluating multiple options to meet specific organizational needs regarding operational excellence, constraints, competency, control and security, consistency, cost management, and productivity.

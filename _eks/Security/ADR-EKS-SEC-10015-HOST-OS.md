@@ -1,3 +1,9 @@
+---
+layout: page
+title: Chose a host OS for your EKS worker nodes
+permalink: /security/03
+---
+
 # Chose a host OS for your EKS worker nodes
 
 Deciding on the right host image for EKS worker nodes is crucial to optimizing performance, security, and operational excellence based on an organization's specific needs. The host image provides the base operating system and runtime for the nodes.
