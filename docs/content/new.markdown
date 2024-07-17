@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Blogging Like a Hacker
+permalink: /new/
 ---
 
 ## Designing Operating Model for Container Platform
