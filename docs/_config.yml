@@ -24,9 +24,9 @@ description: >- # this means to ignore newlines until "baseurl:"
   container design decisions
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://anilwadghule.com" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: anildigital
-github_username:  anildigital
-linkedin_username:  anilwadghule
+twitter_username: ""
+github_username:  ""
+linkedin_username:  ""
 
 # Build settings
 theme: minima
