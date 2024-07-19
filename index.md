@@ -1,5 +1,10 @@
 # Welcome
 
+---
+permalink: /
+layout: default
+---
+
 ## Table of Contents
 
 -[About](about.html)
