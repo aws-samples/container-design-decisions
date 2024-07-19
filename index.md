@@ -1,7 +1,6 @@
 # Welcome
 
 ---
-permalink: /
 layout: default
 ---
 
