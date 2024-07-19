@@ -3,12 +3,6 @@ permalink: /
 layout: default_with_sidebar 
 ---
 
-## Table of Contents
-
-- [About](about.md)
-- [Operations](./EKS/Operations/)
-- [Security](./EKS/Security/)
-
 
 
 ## Container Design Decisions 
