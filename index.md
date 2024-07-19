@@ -1,5 +1,6 @@
 ---
-permalink: /index/
+permalink: /
+layout: default_with_sidebar 
 ---
 
 ## Table of Contents
