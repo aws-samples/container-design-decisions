@@ -35,4 +35,9 @@
          <lastmod>2024-07-29</lastmod>
          <changefreq>daily</changefreq>
     </url>
+    <url>
+         <loc>https://mydomain.org/mysite/Others/LICENSE/</loc>
+         <lastmod>2024-07-29</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
 </urlset>
