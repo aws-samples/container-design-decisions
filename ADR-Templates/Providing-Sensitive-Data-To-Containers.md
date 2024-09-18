@@ -3,9 +3,9 @@
 
 ## Context
 
-Containers provided a way to standardize application packages that can be deployed across different environments and hardware. However, sensitive data such as passwords to access external resources (such as database) by the application container is not recommended to be stored in the container to reduce attack surface. And different environments probably have different values for the sensitive data (such as passwords for test environment is different than production).
+Containers provided a way to standardize application packages that can be deployed across different environments and hardware. However, sensitive data such as passwords to access external resources (such as database) by the application container is not recommended to be stored in the container to reduce attack surface. And different environments probably have different values for the sensitive data (such as passwords for test environment is different than production), keeping this data outside of container image makes them more portable.
 
-Kubernetes provides Secrets to hold such data and inject into application containers, however these resources are Base64 encoded  and not encrypted. Kubernetes provides ways to secure the secrets such as:
+Kubernetes provides Secrets object type to hold such data and inject into application containers, however these resources are Base64 encoded  and not encrypted. Kubernetes provides ways to secure the secrets such as:
 
 * Kubernetes distributes secrets to nodes running Pods that need it and not all nodes.
 
@@ -17,20 +17,20 @@ This document captures different ways on how application containers can consume 
 
 ## Considered Options
 
-**Option 1:**  Use Kubernetes CSI driver to load data from Secret Store 
+**Option 1:**  Use Kubernetes CSI driver to load data from sensitive data Store 
 
-**Option 2:**  Encrypt and Store secrets in Git and load and decrypt them via Kubernetes controller such as SealedSecrets 
+**Option 2:**  Encrypt and Store sensitive data in Git and load and decrypt them via Kubernetes controller such as SealedSecrets 
 
 **Option 3:**  Application to load sensitive data from external store directly 
 
 **Option 4:** Use vendor/OSS provided tool like sidecar to load sensitive information such as HAshiCorp and/or External Secrets Operator
 
-**Option 5:** Use Kubernetes native Secrets 
+**Option 5:** Use Kubernetes native Secrets
 
 
 Let's look into details of these options.
 
-### Option 1: Use Kubernetes CSI driver to load data from Secret Store 
+### Option 1: Use Kubernetes CSI driver to load data from sensitive data Store 
 
 Store sensitive data in an external store such as AWS Secrets Manager. So your sensitive data is outside your Kubernetes cluster.  
 
@@ -52,7 +52,7 @@ Then use the relevant Kubernetes CSI driver to read the sensitive data from the 
 
 * Additional complexity of running a CSI provider in the Kubernetes cluster
 
-### Option 2: Encrypt and Store secrets in Git and load and decrypt them via Kubernetes controller such as SealedSecrets 
+### Option 2: Encrypt and Store sensitive data in Git and load and decrypt them via Kubernetes controller such as SealedSecrets 
 
 Store sensitive data as encrypted objects in the cluster and a Kubernetes controller decrypts and create Secret objects. The encrypted objects such as SealedSecrets has the encrypted data, and a controller creates the Kubernetes Secrets with the un-encrypted data.
 
