@@ -1,0 +1,1027 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://aws-samples.github.io/container-design-decisions/EKS/Security/ADR-EKS-SEC-10011-MULTI-ACCOUNT-STRATEGY/">
+      
+      
+        <link rel="prev" href="../ADR-EKS-SEC-10002-MULTI-TENANCY/">
+      
+      
+        <link rel="next" href="../ADR-EKS-SEC-10015-HOST-OS/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
+    
+    
+      
+        <title>Multi-Account Strategy - Container Design Decisions</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.3cba04c6.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#multi-account-strategy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Container Design Decisions" class="md-header__button md-logo" aria-label="Container Design Decisions" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Container Design Decisions
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Multi-Account Strategy
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Container Design Decisions" class="md-nav__button md-logo" aria-label="Container Design Decisions" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Container Design Decisions
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    EKS
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            EKS
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Operations
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Operations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Operations/ADR-EKS-OPS-07000-OPERATING-MODEL/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Designing Operating Model for Container Platform
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ADR-EKS-SEC-10002-MULTI-TENANCY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Designing a Strategy to Deploy Kubernetes Cluster for Multi-Tenancy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Multi-Account Strategy
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Multi-Account Strategy
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#decision-drivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Drivers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#considered-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Considered Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pros-and-cons-of-the-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros and Cons of the Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pros and Cons of the Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-single-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option-1: Single Account
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-multi-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option-2: Multi-Account
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-hybrid" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option-3: Hybrid
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-4-multi-account-with-vpc-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option-4: Multi-Account with VPC Sharing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Discovery Questions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovery Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#organizational-structure-and-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Organizational Structure and Governance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-and-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security and Isolation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scalability-and-flexibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scalability and Flexibility
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ADR-EKS-SEC-10015-HOST-OS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chose a host OS for your EKS worker nodes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Others
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Others
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Others/CODE_OF_CONDUCT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CODE OF CONDUCT
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Others/CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Others/LICENSE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LICENSE
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#decision-drivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Drivers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#considered-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Considered Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pros-and-cons-of-the-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros and Cons of the Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pros and Cons of the Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-single-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option-1: Single Account
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-multi-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option-2: Multi-Account
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-hybrid" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option-3: Hybrid
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-4-multi-account-with-vpc-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option-4: Multi-Account with VPC Sharing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Discovery Questions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovery Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#organizational-structure-and-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Organizational Structure and Governance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-and-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security and Isolation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scalability-and-flexibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scalability and Flexibility
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="multi-account-strategy">Multi-Account Strategy</h1>
+<p>Designing a Kubernetes architecture within AWS involves deciding between deploying clusters in a single AWS account or adopting a multi-account architecture. Each approach has its advantages and disadvantages, and the best choice depends on an organization's specific needs regarding security, isolation, scalability, cost management, and operational complexity.</p>
+<!-- This is an optional element. Feel free to remove. -->
+<h2 id="decision-drivers">Decision Drivers</h2>
+<ul>
+<li>Simplicity</li>
+<li>Security</li>
+<li>Scalability</li>
+<li>Cost Management</li>
+<li>Operational Complexity</li>
+</ul>
+<h2 id="considered-options">Considered Options</h2>
+<ul>
+<li>Single Account</li>
+<li>Multi-Account</li>
+<li>Hybrid</li>
+<li>Multi-Account with VPC Sharing</li>
+</ul>
+<h2 id="pros-and-cons-of-the-options">Pros and Cons of the Options</h2>
+<h3 id="option-1-single-account">Option-1: Single Account</h3>
+<p>The Single Account option for hosting Kubernetes clusters in AWS represents a straightforward approach to infrastructure management.</p>
+<p>Advantages</p>
+<ol>
+<li>
+<p>Simplicity: Having all Kubernetes clusters and resources in one AWS account simplifies the setup, management, and operational processes. It makes it easier for teams to deploy applications and manage resources without dealing with the complexities of cross-account permissions and networking.</p>
+</li>
+<li>
+<p>Cost Management: With a single account, tracking and managing costs becomes more straightforward. AWS billing and cost management tools provide a consolidated view of expenses, making it easier to monitor and optimize resource usage across all Kubernetes clusters.</p>
+</li>
+<li>Easier Access Management: Managing IAM roles, policies, and permissions can be more straightforward in a single account setup. There's no need to configure cross-account access or deal with the intricacies of assuming roles across accounts.
+Disadvantages</li>
+<li>Limited Isolation: A single AWS account provides limited isolation between different environments (e.g., development, staging, production). This could lead to security risks, such as accidental access to or impact on production resources.</li>
+<li>Blast Radius: In the context of security and operational stability, a single account increases the "blast radius" of potential issues. A misconfiguration or security breach in one part of the account can affect all resources, increasing the risk of widespread impact.</li>
+<li>Resource Limits: AWS imposes certain service limits on the resources that can be created or used within an account. Operating all Kubernetes clusters within a single account could lead to hitting these limits, potentially impacting the ability to scale or deploy new resources as needed.</li>
+</ol>
+<p>In summary, while the Single Account option offers simplicity and ease of management, it does come with significant trade-offs in terms of security, isolation, and scalability. This approach might be suitable for smaller organizations or projects with less stringent requirements for isolation between environments. However, for larger enterprises or applications with high demands for security and operational separation, alternative strategies such as multi-account, hybrid, or multi-account with VPC sharing might be more appropriate.</p>
+<h3 id="option-2-multi-account">Option-2: Multi-Account</h3>
+<p>The Multi-Account option for hosting Kubernetes clusters in AWS leverages multiple AWS accounts to segregate resources, environments, and responsibilities. This approach is geared towards enhancing security, scalability, and organizational flexibility.</p>
+<p>Advantages</p>
+<ol>
+<li>
+<p>Enhanced Security and Isolation: By segregating resources across multiple accounts, organizations can achieve better isolation between different environments (e.g. development, staging, production). This limits the blast radius in case of security breaches or misconfigurations, as the impact is confined to a single account.</p>
+</li>
+<li>
+<p>Scalability: Using multiple accounts allows organizations to bypass the service limits associated with a single AWS account. Each account has its own set of limits, enabling more extensive and scalable deployments without running into resource constraints.</p>
+</li>
+<li>Improved Cost Tracking and Accountability: With resources and environments segregated by account, it becomes easier to track and allocate costs accurately. This aids in financial governance and accountability, as expenses can be directly associated with specific teams, projects, or environments.</li>
+<li>Regulatory Compliance and Data Privacy: Multi-account structures can facilitate compliance with regulatory requirements by ensuring that data and resources subject to specific regulations are isolated in dedicated accounts.
+Disadvantages</li>
+<li>Increased Complexity: Managing multiple AWS accounts adds complexity to network architecture, security configurations, and access management. Organizations need to invest in tools and practices to efficiently manage these aspects, such as AWS Organizations and Service Control Policies (SCPs).</li>
+<li>Operational Overhead: The need to manage cross-account access, billing, and deployments can introduce significant operational overhead. This includes setting up and maintaining trust relationships between accounts and ensuring consistent deployment practices across accounts.</li>
+<li>Potential for Resource Duplication: In a multi-account setup, certain shared resources (e.g., IAM roles, VPCs) may need to be replicated across accounts, leading to increased costs and management overhead.</li>
+</ol>
+<p>In summary, the Multi-Account option offers substantial benefits in terms of security, scalability, and cost management, making it a compelling choice for medium to large organizations with complex needs. However, the increased complexity and operational overhead require careful planning, automation, and the use of AWS management tools to manage effectively. This approach is particularly well-suited for organizations that prioritize security and isolation between different operational environments or need to adhere to stringent regulatory requirements.</p>
+<h3 id="option-3-hybrid">Option-3: Hybrid</h3>
+<p>The Hybrid option for hosting Kubernetes clusters in AWS blends the simplicity of a single AWS account with the isolation and scalability benefits of a multi-account architecture. This approach aims to strike a balance between operational efficiency and the need for environmental separation.</p>
+<p>Advantages</p>
+<ol>
+<li>Balanced Isolation and Efficiency: The hybrid model allows critical or shared services to be centralized in a single account (e.g., logging, monitoring, CI/CD pipelines) while segregating environments (development, staging, production) across different accounts. This setup provides a level of isolation for sensitive or critical environments, reducing the blast radius of potential issues, while still maintaining operational efficiency for shared services.</li>
+<li>Flexibility and Scalability: By using multiple accounts for different stages or projects, organizations can scale more efficiently, avoiding service limits associated with single-account setups. At the same time, the central management of shared services prevents unnecessary duplication of these resources across accounts, optimizing costs and management efforts.</li>
+<li>Improved Cost Allocation and Visibility: A hybrid approach facilitates detailed cost tracking for projects or environments within their respective accounts, while centralized services maintain simplified billing management. This dual approach can enhance visibility into resource utilization and cost efficiency.
+Disadvantages</li>
+<li>Complexity in Management: While aiming to combine the best of both worlds, the hybrid model introduces complexity, particularly in managing access and networking between the centralized services account and the individual environment accounts. Organizations need to carefully plan and implement access controls and networking strategies to ensure smooth operations.</li>
+<li>Operational Overhead: The need to manage both centralized and distributed components across multiple accounts can increase the operational overhead, requiring more sophisticated governance and automation tools to maintain consistency and efficiency.</li>
+<li>Potential for Inconsistent Policies: There's a risk of creating inconsistencies in security policies and configurations between the centralized services and the segregated environments. Ensuring uniform security postures and compliance across all accounts requires diligent management and automation.</li>
+</ol>
+<p>In summary, the Hybrid option provides a pragmatic approach for organizations looking to balance operational simplicity with the benefits of environmental isolation and scalability. It's particularly suited for organizations that have mature cloud practices and can manage the inherent complexity of navigating between centralized and distributed resources. This model offers flexibility to adapt to different project needs, regulatory requirements, and scalability demands, making it an attractive choice for organizations with diverse portfolios and operational models.</p>
+<h3 id="option-4-multi-account-with-vpc-sharing">Option-4: Multi-Account with VPC Sharing</h3>
+<p>The Multi-Account with VPC Sharing option for hosting Kubernetes clusters in AWS utilizes AWS's Virtual Private Cloud (VPC) sharing capabilities to offer an advanced solution that combines the isolation benefits of a multi-account strategy with efficient use of network resources. This approach is designed to maximize security, scalability, and cost efficiency by allowing multiple AWS accounts to securely share a single VPC.</p>
+<p>Advantages</p>
+<ol>
+<li>Efficient Resource Utilization: VPC sharing allows for the efficient use of network resources across multiple accounts without the need to replicate network infrastructure. This can lead to cost savings on networking resources and simplifies network management by reducing the number of VPCs and associated components like NAT Gateways and Route Tables.</li>
+<li>Enhanced Security and Isolation: While sharing the underlying VPC, each account can maintain its security posture. Resources deployed by different accounts within the shared VPC are isolated at the account level, ensuring that the actions of one account do not impact the resources of another. This setup maintains the principle of least privilege and enhances security.</li>
+<li>Scalability Across Accounts: By leveraging VPC sharing, organizations can scale their operations across multiple accounts without being constrained by VPC resource limitations or the administrative overhead of managing separate VPCs for each account. This facilitates a scalable and flexible architecture that can grow with the organization's needs.</li>
+<li>Simplified Inter-Account Communication: VPC sharing simplifies the setup of inter-account communication within the shared VPC, reducing the complexity and overhead associated with setting up VPC peering or transit gateways between multiple VPCs in different accounts.
+Disadvantages</li>
+<li>Complex Setup and Management: While VPC sharing can reduce the complexity of network management, the initial setup, and ongoing management of permissions, resource sharing, and security configurations require careful planning and understanding of AWS networking and access controls.</li>
+<li>Potential for Resource Contention: If not properly managed, there could be potential for resource contention within the shared VPC, such as IP address exhaustion or conflicts in resource tagging and naming conventions. Organizations must implement robust governance and monitoring to prevent these issues.</li>
+<li>Cross-Account Dependency: The shared VPC creates a dependency between accounts, where changes in the shared network infrastructure could impact all accounts. This requires strong change management practices and communication between teams to ensure stability.</li>
+</ol>
+<p>In summary, the Multi-Account with VPC Sharing option offers a sophisticated approach to Kubernetes architecture in AWS, providing efficient use of network resources while maintaining the security and isolation benefits of a multi-account setup. This model is particularly well-suited for organizations with advanced cloud infrastructure needs, looking for scalable, secure, and cost-effective solutions. However, it demands a high level of expertise in AWS networking and account management to navigate its complexities successfully.</p>
+<h2 id="related-adrs">Related ADRs</h2>
+<h2 id="resources">Resources</h2>
+<p><a href="https://aws.github.io/aws-eks-best-practices/security/docs/multiaccount/#multi-account-strategy">EKS Best Practice Guide - Multi Account Strategy</a></p>
+<h2 id="discovery-questions">Discovery Questions</h2>
+<p>Deciding on the right Kubernetes architecture in AWS—whether to use a single account, multi-account, hybrid, or multi-account with VPC sharing—requires careful consideration of your organization's specific needs, capabilities, and long-term objectives.</p>
+<p>Here are key questions that can help guide in making this decision:</p>
+<h3 id="organizational-structure-and-governance">Organizational Structure and Governance</h3>
+<ol>
+<li>How is your organization structured? Understanding whether your organization operates more centrally or if teams work independently can influence whether a single account or a multi-account architecture is more suitable.</li>
+<li>What are your governance and compliance requirements? If you have strict regulatory compliance needs, a multi-account strategy might offer better isolation and control to meet those requirements.</li>
+</ol>
+<h3 id="security-and-isolation">Security and Isolation</h3>
+<ol>
+<li>What level of isolation is required between different environments or projects? If you need strong isolation between production, staging, and development environments to reduce the risk of accidental changes or breaches, a multi-account or hybrid approach may be preferable.</li>
+<li>How critical are security and the potential blast radius of issues to your organization? Assessing the security implications can help determine the need for separation between resources and environments.</li>
+</ol>
+<h3 id="scalability-and-flexibility">Scalability and Flexibility</h3>
+<ol>
+<li>What are your scalability requirements? Consider whether your infrastructure needs to scale rapidly, and if account-specific service limits might hinder this scalability.</li>
+<li>Do you require flexibility in resource allocation and cost management across different teams or projects? This can determine whether a multi-account setup, which allows for more granular control and tracking, is necessary.</li>
+</ol>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      
+    
+  </body>
+</html>

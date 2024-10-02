@@ -8,10 +8,14 @@
       
       
       
+        <link rel="canonical" href="https://aws-samples.github.io/container-design-decisions/">
       
       
       
-      <link rel="icon" href="/container-design-decisions/assets/images/favicon.png">
+        <link rel="next" href="EKS/Operations/ADR-EKS-OPS-07000-OPERATING-MODEL/">
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
     
     
@@ -20,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="/container-design-decisions/assets/stylesheets/main.3cba04c6.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.3cba04c6.min.css">
       
       
 
@@ -39,7 +43,7 @@
       
     
     
-    <script>__md_scope=new URL("/container-design-decisions/",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -57,6 +61,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#welcome-to-container-design-decisions" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -69,7 +78,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/container-design-decisions/." title="Container Design Decisions" class="md-header__button md-logo" aria-label="Container Design Decisions" data-md-component="logo">
+    <a href="." title="Container Design Decisions" class="md-header__button md-logo" aria-label="Container Design Decisions" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -89,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Home
             
           </span>
         </div>
@@ -164,7 +173,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/container-design-decisions/." title="Container Design Decisions" class="md-nav__button md-logo" aria-label="Container Design Decisions" data-md-component="logo">
+    <a href="." title="Container Design Decisions" class="md-nav__button md-logo" aria-label="Container Design Decisions" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -179,10 +188,28 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/container-design-decisions/." class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -191,6 +218,51 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#welcome-to-container-design-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Welcome to Container Design Decisions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      License
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -272,7 +344,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/container-design-decisions/EKS/Operations/ADR-EKS-OPS-07000-OPERATING-MODEL/" class="md-nav__link">
+      <a href="EKS/Operations/ADR-EKS-OPS-07000-OPERATING-MODEL/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -336,7 +408,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/container-design-decisions/EKS/Security/ADR-EKS-SEC-10002-MULTI-TENANCY/" class="md-nav__link">
+      <a href="EKS/Security/ADR-EKS-SEC-10002-MULTI-TENANCY/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -357,7 +429,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/container-design-decisions/EKS/Security/ADR-EKS-SEC-10011-MULTI-ACCOUNT-STRATEGY/" class="md-nav__link">
+      <a href="EKS/Security/ADR-EKS-SEC-10011-MULTI-ACCOUNT-STRATEGY/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -378,7 +450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/container-design-decisions/EKS/Security/ADR-EKS-SEC-10015-HOST-OS/" class="md-nav__link">
+      <a href="EKS/Security/ADR-EKS-SEC-10015-HOST-OS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -449,7 +521,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/container-design-decisions/Others/CODE_OF_CONDUCT/" class="md-nav__link">
+      <a href="Others/CODE_OF_CONDUCT/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -470,7 +542,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/container-design-decisions/Others/CONTRIBUTING/" class="md-nav__link">
+      <a href="Others/CONTRIBUTING/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -491,7 +563,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/container-design-decisions/Others/LICENSE/" class="md-nav__link">
+      <a href="Others/LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -530,6 +602,41 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#welcome-to-container-design-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Welcome to Container Design Decisions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      License
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -540,8 +647,34 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  <h1>Home</h1>
+
+<h2 id="welcome-to-container-design-decisions">Welcome to Container Design Decisions</h2>
+<p>The repository offers a framework that helps a broad range of technical practitioners to make informed decisions to adpot container technologies.
+ - properly understand and evaluate the entirety of the technical problem space when designing or transforming a containers solution, 
+ - for each relevant technical domain, understood the available options and associated trade-offs
+ - describe and document each architectural decision, its context, and its consequences in a clear and standard format. </p>
+<h2 id="contributing">Contributing</h2>
+<p>See <a href="Others/CONTRIBUTING/">CONTRIBUTING</a> for more information.</p>
+<p>See <a href="Others/CODE_OF_CONDUCT/">Code of Conduct</a> for more information.</p>
+<h2 id="license">License</h2>
+<p>This library is licensed under the MIT-0 License. See the <a href="Others/LICENSE/">LICENSE</a> file.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -575,10 +708,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "/container-design-decisions/", "features": [], "search": "/container-design-decisions/assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="/container-design-decisions/assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      <script src="assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>

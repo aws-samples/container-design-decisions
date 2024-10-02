@@ -1,4 +1,0 @@
-site_name: Container Design Decisions
-site_url: https://aws-samples.github.io/container-design-decisions/
-theme:
-  name: material
