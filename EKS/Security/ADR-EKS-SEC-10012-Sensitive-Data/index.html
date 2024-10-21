@@ -1,0 +1,1303 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://aws-samples.github.io/container-design-decisions/EKS/Security/ADR-EKS-SEC-10012-Sensitive-Data/">
+      
+      
+        <link rel="prev" href="../ADR-EKS-SEC-10011-MULTI-ACCOUNT-STRATEGY/">
+      
+      
+        <link rel="next" href="../ADR-EKS-SEC-10015-HOST-OS/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
+    
+    
+      
+        <title>Store and make sensitive data avaiable - Container Design Decisions</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.3cba04c6.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#store-and-make-sensitive-data-avaiable" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Container Design Decisions" class="md-header__button md-logo" aria-label="Container Design Decisions" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Container Design Decisions
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Store and make sensitive data avaiable
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Container Design Decisions" class="md-nav__button md-logo" aria-label="Container Design Decisions" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Container Design Decisions
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    EKS
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            EKS
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Operations
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Operations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Operations/ADR-EKS-OPS-07000-OPERATING-MODEL/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Designing Operating Model for Container Platform
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ADR-EKS-SEC-10002-MULTI-TENANCY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Designing a Strategy to Deploy Kubernetes Cluster for Multi-Tenancy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ADR-EKS-SEC-10011-MULTI-ACCOUNT-STRATEGY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multi-Account Strategy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Store and make sensitive data avaiable
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Store and make sensitive data avaiable
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#considered-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Considered Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pros-and-cons-of-the-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros and Cons of the Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pros and Cons of the Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-use-kubernetes-csi-driver-to-load-data-from-sensitive-data-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1: Use Kubernetes CSI driver to load data from sensitive data Store
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 1: Use Kubernetes CSI driver to load data from sensitive data Store">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-encrypt-and-store-sensitive-data-in-git-and-load-and-decrypt-them-via-kubernetes-controller-such-as-sealedsecrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2: Encrypt and Store sensitive data in Git and load and decrypt them via Kubernetes controller such as SealedSecrets
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 2: Encrypt and Store sensitive data in Git and load and decrypt them via Kubernetes controller such as SealedSecrets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-application-to-load-sensitive-data-from-external-store-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 3: Application to load sensitive data from external store directly
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pros_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-4-use-vendoross-provided-tool-to-load-sensitive-information-such-as-hashicorp-vault-sidecar-or-external-secrets-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 4: Use vendor/OSS provided tool to load sensitive information such as HashiCorp Vault sidecar or External Secrets Operator
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 4: Use vendor/OSS provided tool to load sensitive information such as HashiCorp Vault sidecar or External Secrets Operator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Discovery Questions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovery Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      General questions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whats-the-impact-if-the-sensitive-data-is-compromised" class="md-nav__link">
+    <span class="md-ellipsis">
+      What’s the impact if the sensitive data is compromised?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#do-you-use-an-existing-sensitive-data-provider-as-part-of-your-enterprise" class="md-nav__link">
+    <span class="md-ellipsis">
+      Do you use an existing sensitive data provider as part of your enterprise?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-are-the-security-and-compliance-requirements-for-storing-and-accessing-the-sensitive-data-eg-encryption-at-rest-access-control-auditing-monitor-rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are the security and compliance requirements for storing and accessing the sensitive data (e.g., encryption at rest, access control, auditing, monitor, rotation)?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#do-you-want-to-decouple-the-configuration-security-concerns-from-the-application-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Do you want to decouple the configuration security concerns from the application logic?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#do-you-want-to-use-open-solution-for-better-flexibility-and-not-relying-on-3rd-party-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Do you want to use open solution for better flexibility and not relying on 3rd party support?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-important-is-the-availability-of-the-sensitive-data-provider-to-your-applications-functionality-can-your-application-gracefully-handle-temporary-unavailability-of-the-sensitive-data-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      How important is the availability of the sensitive data provider to your application's functionality? Can your application gracefully handle temporary unavailability of the sensitive data provider?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ADR-EKS-SEC-10015-HOST-OS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chose a host OS for your EKS worker nodes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Others
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Others
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Others/CODE_OF_CONDUCT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CODE OF CONDUCT
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Others/CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Others/LICENSE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LICENSE
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#considered-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Considered Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pros-and-cons-of-the-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros and Cons of the Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pros and Cons of the Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-use-kubernetes-csi-driver-to-load-data-from-sensitive-data-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1: Use Kubernetes CSI driver to load data from sensitive data Store
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 1: Use Kubernetes CSI driver to load data from sensitive data Store">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-encrypt-and-store-sensitive-data-in-git-and-load-and-decrypt-them-via-kubernetes-controller-such-as-sealedsecrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2: Encrypt and Store sensitive data in Git and load and decrypt them via Kubernetes controller such as SealedSecrets
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 2: Encrypt and Store sensitive data in Git and load and decrypt them via Kubernetes controller such as SealedSecrets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-application-to-load-sensitive-data-from-external-store-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 3: Application to load sensitive data from external store directly
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pros_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-4-use-vendoross-provided-tool-to-load-sensitive-information-such-as-hashicorp-vault-sidecar-or-external-secrets-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 4: Use vendor/OSS provided tool to load sensitive information such as HashiCorp Vault sidecar or External Secrets Operator
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 4: Use vendor/OSS provided tool to load sensitive information such as HashiCorp Vault sidecar or External Secrets Operator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Discovery Questions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovery Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      General questions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whats-the-impact-if-the-sensitive-data-is-compromised" class="md-nav__link">
+    <span class="md-ellipsis">
+      What’s the impact if the sensitive data is compromised?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#do-you-use-an-existing-sensitive-data-provider-as-part-of-your-enterprise" class="md-nav__link">
+    <span class="md-ellipsis">
+      Do you use an existing sensitive data provider as part of your enterprise?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-are-the-security-and-compliance-requirements-for-storing-and-accessing-the-sensitive-data-eg-encryption-at-rest-access-control-auditing-monitor-rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are the security and compliance requirements for storing and accessing the sensitive data (e.g., encryption at rest, access control, auditing, monitor, rotation)?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#do-you-want-to-decouple-the-configuration-security-concerns-from-the-application-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Do you want to decouple the configuration security concerns from the application logic?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#do-you-want-to-use-open-solution-for-better-flexibility-and-not-relying-on-3rd-party-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Do you want to use open solution for better flexibility and not relying on 3rd party support?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-important-is-the-availability-of-the-sensitive-data-provider-to-your-applications-functionality-can-your-application-gracefully-handle-temporary-unavailability-of-the-sensitive-data-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      How important is the availability of the sensitive data provider to your application's functionality? Can your application gracefully handle temporary unavailability of the sensitive data provider?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="store-and-make-sensitive-data-avaiable">Store and make sensitive data avaiable</h1>
+<p>Containers provided a way to standardize application packages that can be deployed across different environments and hardware. However, sensitive data such as passwords to access external resources (such as database) by the application container is not recommended to be stored in the container to reduce attack surface. And different environments probably have different values for the sensitive data (such as passwords for test environment is different than production), keeping this data outside of container image makes them more portable.</p>
+<p>Kubernetes provides Secrets object type to hold such data and inject into application containers, however these resources are Base64 encoded  and not encrypted. Kubernetes provides ways to secure the secrets such as:</p>
+<ul>
+<li>
+<p>Kubernetes distributes secrets to nodes running Pods that need it and not all nodes.</p>
+</li>
+<li>
+<p>When secrets is available on nodes, they are stored in memory in a tmpfs and never written to physical storage, and Kubernetes remove them when the Pod is no longer available on the node</p>
+</li>
+<li>
+<p>Etcd could be encrypted where it stores the Secrets information. Envelope encryption provides a way to encrypt Kubernetes secrets using CMK.</p>
+</li>
+</ul>
+<p>This document captures different ways on how application containers can consume sensitive data such as database password, private keys, and api keys.</p>
+<h2 id="considered-options">Considered Options</h2>
+<p><strong>Option 1:</strong>  Use Kubernetes CSI driver to load data from sensitive data Store </p>
+<p><strong>Option 2:</strong>  Encrypt and Store sensitive data in Git and load and decrypt them via Kubernetes controller such as SealedSecrets </p>
+<p><strong>Option 3:</strong>  Application to load sensitive data from external store directly </p>
+<p><strong>Option 4:</strong> Use vendor/OSS provided tool like sidecar to load sensitive information such as HAshiCorp and/or External Secrets Operator</p>
+<p><strong>Option 5:</strong> Use Kubernetes native Secrets</p>
+<h2 id="pros-and-cons-of-the-options">Pros and Cons of the Options</h2>
+<h3 id="option-1-use-kubernetes-csi-driver-to-load-data-from-sensitive-data-store">Option 1: Use Kubernetes CSI driver to load data from sensitive data Store</h3>
+<p>Store sensitive data in an external store such as AWS Secrets Manager. So your sensitive data is outside your Kubernetes cluster.  </p>
+<p>Then use the relevant Kubernetes CSI driver to read the sensitive data from the external store and load/mount onto the application container at runtime as a file. The Kubernetes CSI driver option provides flexibility to access different third-party Secrets store and not just as AWS Secrets Manager.</p>
+<h4 id="pros">Pros</h4>
+<ul>
+<li>
+<p>Avoid storing sensitive data into Kubernetes objects such as secrets. CSI driver mount the sensitive data as files.</p>
+</li>
+<li>
+<p>No change in application is required to to read sensitive data from a central store. Application load data from local files.</p>
+</li>
+<li>
+<p>Existing GitOps principle could be utilized to approve and audit the use of sensitive data through the use of SecretProviderClass CRD object.  </p>
+</li>
+<li>
+<p>easy to migrate to a different backend that also provides industry standard CSI interface</p>
+</li>
+</ul>
+<h4 id="cons">Cons</h4>
+<ul>
+<li>
+<p>Storing sensitive data outside of the cluster will add additional dependency which may hurt the availability of the application if Secret store is not operational.</p>
+</li>
+<li>
+<p>Additional complexity of running a CSI provider in the Kubernetes cluster</p>
+</li>
+</ul>
+<h3 id="option-2-encrypt-and-store-sensitive-data-in-git-and-load-and-decrypt-them-via-kubernetes-controller-such-as-sealedsecrets">Option 2: Encrypt and Store sensitive data in Git and load and decrypt them via Kubernetes controller such as SealedSecrets</h3>
+<p>Store sensitive data as encrypted objects in the cluster and a Kubernetes controller decrypts and create Secret objects. The encrypted objects such as SealedSecrets has the encrypted data, and a controller creates the Kubernetes Secrets with the un-encrypted data.</p>
+<p>Teams adopting GitOps can create the encrypted SealedSecrets objects and store them in Git. The controller will decrypt and load them as Kubernetes Secrets. The deployment will refer then secrets to be available at runtime for the applications. </p>
+<p>For SealedSecrets, although the controler decrypts the information, the encryption is done outside of cluster using the tooling provided by SealedSecrets project. </p>
+<h4 id="pros_1">Pros</h4>
+<ul>
+<li>
+<p>The team utilities the existing (if any) GitOps principles</p>
+</li>
+<li>
+<p>No change in application is required to to read sensitive data from Git Repo.</p>
+</li>
+</ul>
+<h4 id="cons_1">Cons</h4>
+<ul>
+<li>
+<p>Other users of namespace can escalate to access the Secrets that is mounted by the controller. </p>
+</li>
+<li>
+<p>Secrets are not the most secure option. As the information will still be available in the cluster as Secrets which will increase the attack surface area</p>
+</li>
+<li>
+<p>Additional complexity of running a Secrets provider in the cluster</p>
+</li>
+</ul>
+<h4 id="option-3-application-to-load-sensitive-data-from-external-store-directly">Option 3: Application to load sensitive data from external store directly</h4>
+<p>Change application to load and decode encrypted information within the application itself from the exernal store.</p>
+<p>Using this approach the application will use the sensitive data provider API to interact and load the data onto application memory.</p>
+<h4 id="pros_2">Pros</h4>
+<ul>
+<li>
+<p>Direct coupling may help to use more features provided by the external store vendor</p>
+</li>
+<li>
+<p>More secure approach as sensitive data resides in memory of the application container</p>
+</li>
+</ul>
+<h4 id="cons_2">Cons</h4>
+<ul>
+<li>
+<p>This option will result in changes in multiple applications which result in more maintenance and difficult to change providers.</p>
+</li>
+<li>
+<p>High cost if you want to move to another vendor</p>
+</li>
+<li>
+<p>Couples the application logic with configuration security. </p>
+</li>
+<li>
+<p>generally anti pattern https://12factor.net/config</p>
+</li>
+</ul>
+<h3 id="option-4-use-vendoross-provided-tool-to-load-sensitive-information-such-as-hashicorp-vault-sidecar-or-external-secrets-operator">Option 4: Use vendor/OSS provided tool to load sensitive information such as HashiCorp Vault sidecar or External Secrets Operator</h3>
+<p>Some external sensitive data stores such as Hashicorp Vault, provide an sidecar container that can be associated with your application. The container works as a bridge for what data is needed by the application container and how to get it from the external store. This is implemented as a  mutating webhook, that allows modification of any resource when it is created through intercepting Kubernetes API calls. When a Pod specification contains a vault-specific annotation, the  controller will add a container for syncing with Vault and to mount a volume for the secret data onto the application container.</p>
+<p>You can use other provider such as External Secrets Operator which integrates with an dedicated secret store such as AWS Secrets Manager which can perform the encryption.</p>
+<h4 id="pros_3">Pros</h4>
+<ul>
+<li>No change in application is required to to read sensitive data from a central store.</li>
+<li>Direct coupling may help to use more features provided by the external store vendor</li>
+</ul>
+<h4 id="cons_3">Cons</h4>
+<ul>
+<li>Tight coupling between the vendor provided container may result in lock-in</li>
+<li>High cost if you want to move to another vendor</li>
+</ul>
+<h2 id="resources">Resources</h2>
+<p><a href="https://aws.github.io/aws-eks-best-practices/security/docs/data/">EKS Best practices</a>.</p>
+<h2 id="discovery-questions">Discovery Questions</h2>
+<p>This section aims to provide multiple perspectives of this decision and how you assess the right fit for your use case. </p>
+<h4 id="general-questions">General questions</h4>
+<p>The section provide additional considerations that may be useful for adopting a particular solution. Howver, this ADR will not provide any recommendations for these considetaions.</p>
+<ul>
+<li>
+<p>Do you have an enterprise standard in your org to manage Secret? How will it add to complexity if you are not consistent with your enpterprise standard and what features your existing solution may not provide?</p>
+</li>
+<li>
+<p>Is your secret management solution subject to any internal or external regulatory requirements standards?</p>
+</li>
+<li>
+<p>Do you have an centralised team to manage sensitive data? How your decision will effect the process of sensitive data management? </p>
+</li>
+</ul>
+<h4 id="whats-the-impact-if-the-sensitive-data-is-compromised">What’s the impact if the sensitive data is compromised?</h4>
+<p>This document does not deal with if the sensitive data store in compromised. However, if one or a list od secrets are compromised, immediately rotate them. It is therefore important to select a sensitive data provider that supports rotation and have a routine rotation policy implemented. </p>
+<h4 id="do-you-use-an-existing-sensitive-data-provider-as-part-of-your-enterprise">Do you use an existing sensitive data provider as part of your enterprise?</h4>
+<p>If you want to continue with your Enterprise standards, Kubernetes CSI Driver and External Secrets Operator may provided integration with your existing sensitive data provider. </p>
+<h4 id="what-are-the-security-and-compliance-requirements-for-storing-and-accessing-the-sensitive-data-eg-encryption-at-rest-access-control-auditing-monitor-rotation">What are the security and compliance requirements for storing and accessing the sensitive data (e.g., encryption at rest, access control, auditing, monitor, rotation)?</h4>
+<p>Managing sensitive data lifecycle is a specialized task. Adopting dedicated stores such as AWS Secrets Manager would result in reducing the complexity of your architecture. These stores provides observability, access control and lifecycle of your sensitive data. 
+Use Kubernetes components with audit trails to load and make these data available to your applications Kubernetes CSI driver and external secrets operator options provide integration with state of the art external sensitive data stores and could be considered</p>
+<h4 id="do-you-want-to-decouple-the-configuration-security-concerns-from-the-application-logic">Do you want to decouple the configuration security concerns from the application logic?</h4>
+<p>It is recommended to avoid making your application aware of sensitive data location. Application shall load the sensitive data using standard approaches such as files mounted on the container volume. All options other than the “change application to load data directly from sensitive data store” provide this option and could be a good fit.</p>
+<h4 id="do-you-want-to-use-open-solution-for-better-flexibility-and-not-relying-on-3rd-party-support">Do you want to use open solution for better flexibility and not relying on 3rd party support?</h4>
+<p>Kubernetes CSI driver, External Secrets Operator provide use standard Kubernetes constructs such as controllers and support for a variety of external sensitive data stores with source code available openly. SealedSecrets also falls into this category with the sensitive data stored in Git.</p>
+<h4 id="how-important-is-the-availability-of-the-sensitive-data-provider-to-your-applications-functionality-can-your-application-gracefully-handle-temporary-unavailability-of-the-sensitive-data-provider">How important is the availability of the sensitive data provider to your application's functionality? Can your application gracefully handle temporary unavailability of the sensitive data provider?</h4>
+<p>Since loading data onto the applications via external sensitive data store requires access to the secrets store. It’s availability may reduce your application resilience because your application may fail to start new instances if the store is not available. In this case loading secrets onto your Kubernetes cluster would makes more sense. Do note that cloud based sensitive data provider such as KMS has a very high SLA.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      
+    
+  </body>
+</html>
