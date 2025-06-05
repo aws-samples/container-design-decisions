@@ -1,0 +1,12 @@
+langgraph==0.4.3
+langchain-openai==0.3.16
+langchain==0.3.25
+langfuse==2.60.4
+langchain-mcp-adapters==0.0.11
+fastapi==0.115.12
+grandalf==0.8
+streamlit==1.45.1
+transformers==4.52.1
+torch==2.7.0
+kitchenai-whisk==0.2.3
+boto3==1.38.25
