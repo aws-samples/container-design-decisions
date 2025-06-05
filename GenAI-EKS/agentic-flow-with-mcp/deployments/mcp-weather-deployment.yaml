@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-weather
+  namespace: genai
+  labels:
+    app: mcp-weather
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-weather
+  template:
+    metadata:
+      labels:
+        app: mcp-weather
+    spec:
+      containers:
+      - name: mcp-weather
+        image: public.ecr.aws/p7b6k2h9/fmamazon/genai-eks:python-3.11-slim
+        command: ["/bin/sh", "-c"]
+        args:
+        - >
+          mkdir -p /app &&
+          pip install fastapi langgraph langchain-openai langchain-mcp-adapters fastapi uvicorn &&
+          cp /config/mcp-weather.py /app/ &&
+          cd /app &&
+          python mcp-weather.py
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: mcp-weather-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-weather
+  namespace: genai
+spec:
+  selector:
+    app: mcp-weather
+  ports:
+  - port: 8000
+    targetPort: 8000
+  type: ClusterIP

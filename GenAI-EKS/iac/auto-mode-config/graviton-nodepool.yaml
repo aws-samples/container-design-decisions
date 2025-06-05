@@ -1,0 +1,58 @@
+
+---
+apiVersion: eks.amazonaws.com/v1
+kind: NodeClass
+metadata:
+  name: graviton
+spec:
+  # Enables network policy support
+  networkPolicy: DefaultAllow
+  # Optional: Enables logging for network policy events
+  networkPolicyEventLogs: Enabled
+  subnetSelectorTerms:
+    - tags:
+        cluster-name: "genai-apps-on-eks-april-2025"
+
+  securityGroupSelectorTerms:
+    - tags:
+        cluster-name: "genai-apps-on-eks-april-2025"
+  role: <ADD_NODE_ROLE>
+  tags:
+    model-inferencing: "graviton"
+  ephemeralStorage:
+    size: "400Gi"
+    iops: 10000
+    throughput: 512
+---
+
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: graviton
+spec:
+  limits:
+    cpu: 256
+    memory: 4096Gi
+  disruption:
+    consolidationPolicy: WhenEmpty #or WhenEmptyOrUnderutilized
+    consolidateAfter: 30s
+
+  template:
+    metadata:
+      labels:
+        model-inferencing: "graviton"
+    spec:
+      nodeClassRef:
+        group: eks.amazonaws.com
+        kind: NodeClass
+        name: graviton
+
+      expireAfter: 24h
+
+      requirements:
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["arm64"]
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["on-demand"]

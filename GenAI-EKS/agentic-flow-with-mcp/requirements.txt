@@ -1,0 +1,10 @@
+fastapi
+langgraph
+langchain-openai
+langchain-mcp-adapters
+
+
+
+
+
+
