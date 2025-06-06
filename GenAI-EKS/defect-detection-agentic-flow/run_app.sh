@@ -25,12 +25,17 @@ pip install -r requirements.txt
 # Change to the react-agent directory to run the MCP servers
 cd react-agent
 
-# Start MCP servers in background
+# Create log file for classify server
 echo "=== Starting MCP servers ==="
-python mcp-classify-conv-server.py &
+LOG_FILE="/tmp/mcp-classify-server.log"
+> $LOG_FILE  # Clear log file if it exists
+
+# Start classify server with output redirected to log file
+python mcp-classify-conv-server.py > $LOG_FILE 2>&1 &
 MCP_CLASSIFY_PID=$!
 echo "Started mcp-classify-conv-server.py (PID: $MCP_CLASSIFY_PID)"
 
+# Start other MCP servers
 python mcp-identify-defect_area-tool.py &
 MCP_IDENTIFY_PID=$!
 echo "Started mcp-identify-defect_area-tool.py (PID: $MCP_IDENTIFY_PID)"
@@ -39,9 +44,26 @@ python mcp-image-cropping-tool.py &
 MCP_CROPPING_PID=$!
 echo "Started mcp-image-cropping-tool.py (PID: $MCP_CROPPING_PID)"
 
-# Give the MCP servers a moment to start up
+# Wait for the facebook/convnext-tiny-224 model to be loaded
 echo "Waiting for MCP servers to initialize..."
-sleep 5
+echo "Waiting for facebook/convnext-tiny-224 model to load..."
+
+MAX_WAIT=120  # Maximum wait time in seconds
+WAITED=0
+while ! grep -q "successfully" $LOG_FILE && [ $WAITED -lt $MAX_WAIT ]; do
+    echo -n "."
+    sleep 2
+    WAITED=$((WAITED + 2))
+    if [ $((WAITED % 10)) -eq 0 ]; then
+        echo " $WAITED seconds"
+    fi
+done
+
+if grep -q "successfully" $LOG_FILE; then
+    echo -e "\n✅ Model facebook/convnext-tiny-224 loaded successfully!"
+else
+    echo -e "\n⚠️ Timeout waiting for model to load, continuing anyway..."
+fi
 
 # Run fault detection agent
 echo "=== Starting fault detection agent ==="

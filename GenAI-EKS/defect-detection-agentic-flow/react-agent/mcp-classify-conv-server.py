@@ -20,8 +20,10 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-FT_MODEL_PATH = ""
+# Hugging Face model name
+MODEL_NAME = "facebook/convnext-tiny-224"
 
+# Custom labels for your defect classification task
 labels_names = {
     0: "A",
     1: "B",
@@ -41,16 +43,23 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 logger.info(f"Using device: {device}")
 
 try:
-    image_processor=AutoImageProcessor.from_pretrained(FT_MODEL_PATH)
+    logger.info(f"Loading model from Hugging Face: {MODEL_NAME}")
+    
+    # Load image processor from Hugging Face
+    image_processor = AutoImageProcessor.from_pretrained(MODEL_NAME)
+    
+    # Load model from Hugging Face
     inference_model = AutoModelForImageClassification.from_pretrained(
-        FT_MODEL_PATH,
+        MODEL_NAME,
         num_labels=len(labels),
         id2label=id2label,
         label2id=label2id,
+        ignore_mismatched_sizes=True  # This allows loading with different number of classes
     )
+    
     inference_model = inference_model.to(device)
     inference_model.eval()
-    logger.info("Model loaded successfully.")
+    logger.info("Model loaded successfully from Hugging Face.")
 except Exception as e:
     logger.error(f"Error loading model: {e}")
     raise
