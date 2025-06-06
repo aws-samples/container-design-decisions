@@ -101,12 +101,12 @@ def encode_image(image_source):
   
   
 
-model_key=""
-api_gateway_url=""
+model_key=os.environ.get("LLAMA_VISION_MODEL_KEY", "")
+api_gateway_url=os.environ.get("GATEWAY_URL", "")
 
-langfuse_url=""
-local_public_key = ""
-local_secret_key = "" 
+langfuse_url=os.environ.get("LANGFUSE_URL", "")
+local_public_key = os.environ.get("LANGFUSE_PUBLIC_KEY", "")
+local_secret_key = os.environ.get("LANGFUSE_SECRET_KEY", "") 
 
 os.environ["LANGFUSE_SECRET_KEY"] = local_secret_key
 os.environ["LANGFUSE_HOST"] = langfuse_url
