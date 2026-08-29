@@ -1,5 +1,5 @@
 langgraph==0.4.3
-langchain-openai==0.3.16
+langchain-openai==1.1.14
 langchain==0.3.25
 langfuse==2.60.4
 langchain-mcp-adapters==0.0.11
