@@ -1,4 +1,4 @@
-# RIV319
+# CON319 - Amazon EKS incident response and remediation with AWS DevOps Agent
 
 ## Docs
   - [Get Started with AWS DevOps Agent](https://d5o1k46wbgzsr.cloudfront.net/)
